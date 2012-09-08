@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cat /sys/devices/platform/smapi/BAT0/cycle_count

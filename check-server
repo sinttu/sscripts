@@ -1,0 +1,12 @@
+#!/bin/bash
+
+while true
+do
+	ssh ${1}@${2} -t 2>/dev/null
+	if [ $? == 0 ]; then
+		break;
+	else
+		sleep 10m
+	fi
+done
+

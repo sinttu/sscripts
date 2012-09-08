@@ -1,0 +1,28 @@
+#!/bin/bash
+# Uses the information provided by tp_smapi
+# to keep track of battery degradation
+# Dependencies: tlp, tp_smapi, bc 
+# Outputs to $HOME/.battery/info the batterys max capacity (mAh) and time
+
+BATPATH="/sys/devices/platform/smapi/BAT0/"
+SAVEPATH="$HOME/.battery"
+FILENAME=".info"
+
+if [ ! -d $BATPATH ] ; then
+	echo "Most likely tp_smapi is not installed"
+	exit	
+fi
+
+if [ ! -d $SAVEPATH ] ; then
+	cd /
+	mkdir -p $SAVEPATH
+fi
+
+if [ -f $BATPATH/remaining_percent ] && [ -f $BATPATH/remaining_capacity ] ;then
+	bat_percent=$(cat $BATPATH/remaining_percent)
+	bat_capacity=$(cat $BATPATH/remaining_capacity)
+	bat_max_cap=$(echo "$bat_capacity/$bat_percent * 100" | bc)
+	echo -n "$bat_max_cap	" >> $SAVEPATH/$FILENAME
+	echo -n "$(cycles)	" >> $SAVEPATH/$FILENAME
+	date +%s >> $SAVEPATH/$FILENAME
+fi

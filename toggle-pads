@@ -1,0 +1,8 @@
+#!/bin/bash
+
+touchpad=$(xinput list | grep 'TouchPad' | sed -e 's/.*id=\([0-9]\+\).*/\1/')
+trackpad=$(xinput list | grep 'TrackPoint' | sed -e 's/.*id=\([0-9]\+\).*/\1/')
+enabled=$(xinput list-props $touchpad | grep 'Device Enabled' | sed 's/.*:.\+\([01]\).*/\1/')
+((enabled)) && status=0 || status=1
+xinput --set-prop $touchpad "Device Enabled" $status
+xinput --set-prop $trackpad "Device Enabled" $status

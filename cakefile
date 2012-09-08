@@ -1,0 +1,34 @@
+#!/bin/bash
+ls | grep makefile >> /dev/null
+if [ $? = 0 ] ;then
+        exit;
+fi
+
+TMPFILE="/tmp/cakefile"
+echo CC=gcc >> makefile
+echo CFLAGS=-Wall -Wextra -pedantic -std=c99 -g >> makefile
+echo -n OBJS= >> makefile
+
+ls | grep \\.c >> $TMPFILE
+while read line 
+do
+echo -en "${line/.c/.o} " >> makefile
+done < $TMPFILE
+echo  -e \\n >> makefile
+
+echo "program : \$(OBJS)" >> makefile
+echo -e "\\t \$(CC) -o \$@ \$(OBJS)" >> makefile
+echo >> makefile
+
+while read line
+do
+echo -e "${line/.c/.o} : $line" >> makefile
+echo -e "\\t \$(CC) \$(CFLAGS) -c \$<\\n" >> makefile
+
+done < $TMPFILE
+
+rm -f $TMPFILE 1>/dev/null
+echo -e .PHONY : clean \\n>> makefile
+
+echo clean : >> makefile
+echo -e \\t"rm -f \$(OBJS) program" >> makefile
